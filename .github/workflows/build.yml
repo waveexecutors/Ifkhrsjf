@@ -1,0 +1,25 @@
+name: build
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip source if uploaded as zip
+        run: |
+          if [ -f source.zip ]; then unzip -o source.zip; fi
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.1'
+      - name: Build jar
+        run: gradle build --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EnzoUtility-jar
+          path: build/libs/*.jar
